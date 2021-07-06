@@ -1,20 +1,39 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
+import Welcome from '../views/Welcome.vue'
+import Chatroom from '../views/Chatroom.vue'
+import { projectAuth } from '../firebase/config'
+import { ref } from 'vue'
+
+
+//ROUTE guard is just a functiont hat runs before a particular route to determine if we are allowed to view the route
+const requireAuth = (to, from, next) => {
+  
+  let user = projectAuth.currentUser
+  console.log('current user in auth guard: ', user)
+
+  if (!user) {
+    next({name: 'Welcome'})
+  } else {
+    next()
+  }
+}
+
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'Welcome',
+    component: Welcome
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
+    path: '/chatroom',
+    name: 'Chatroom',
+    component: Chatroom,
+    props: true,
+    beforeEnter: requireAuth
+  } 
+
+  
 ]
 
 const router = createRouter({
